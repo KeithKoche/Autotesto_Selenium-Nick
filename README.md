@@ -18,3 +18,5 @@ test_userlogin.py
 test_adminlogin.py 
 
 содержат решение ч. 2 и 3. ДЗ
+
+ДОПОЛНЕНИЕ: тесты переписаны под паттерн PageObject

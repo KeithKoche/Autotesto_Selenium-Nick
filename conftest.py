@@ -3,17 +3,18 @@ from selenium import webdriver
 
 
 def pytest_addoption(parser):
-    parser.addoption("--maximized", action="store_true")
-    parser.addoption("--headless", action="store_true")
-    parser.addoption("--browser", action="store", default="chrome", choices=["ie", "firefox", "chrome"])
+    parser.addoption("--maxres", action="store_true")
+    parser.addoption("--head", action="store_true")
+    parser.addoption("--bwr", action="store", default="chrome", choices=["ie", "firefox", "chrome"])
     parser.addoption("--burl", action="store", default="https://demo.opencart.com/")
+
 
 
 @pytest.fixture
 def browse(request):
-    browser = request.config.getoption("--browser")
-    headless = request.config.getoption("--headless")
-    maximized = request.config.getoption("--maximized")
+    browser = request.config.getoption("--bwr")
+    headless = request.config.getoption("--head")
+    maximized = request.config.getoption("--maxres")
     url = request.config.getoption("--burl")
 
     driver = "chrome"
@@ -37,11 +38,11 @@ def browse(request):
         driver.maximize_window()
 
     request.addfinalizer(driver.close)
-
     driver.get(url)
     driver.url = url
-
     return driver
+
+
 
 
 
