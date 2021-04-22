@@ -3,39 +3,38 @@ from selenium import webdriver
 
 
 def pytest_addoption(parser):
-    parser.addoption("--maxres", action="store_true")
-    parser.addoption("--head", action="store_true")
-    parser.addoption("--bwr", action="store", default="chrome", choices=["ie", "firefox", "chrome"])
+    parser.addoption("--bwr", action="store", default="chrome")
     parser.addoption("--burl", action="store", default="https://demo.opencart.com/")
-
-
+    parser.addoption("--xcr", action="store", default="192.168.1.48")
+    parser.addoption("--brover", action="store", default="89.0")
+    parser.addoption("--vnc", action="store_true", default=True)
+    parser.addoption("--logs", action="store_true", default=True)
 
 @pytest.fixture
 def browse(request):
     browser = request.config.getoption("--bwr")
-    headless = request.config.getoption("--head")
-    maximized = request.config.getoption("--maxres")
     url = request.config.getoption("--burl")
+    executor = request.config.getoption("--xcr")
+    version = request.config.getoption("--brover")
+    vnc = request.config.getoption("--vnc")
+    logs = request.config.getoption("--logs")
 
-    driver = "chrome"
+    executor_url = f"http://{executor}:4444/wd/hub"
 
-    if browser == "chrome":
-        options = webdriver.ChromeOptions()
-        if headless: options.headless = True
-        driver = webdriver.Chrome(options=options)
+    capabilities = {
+        "browserName": browser,
+        "browserVersion": version,
+        "screenResolution": "1600x900",
+        "selenoid:options": {
+            "enableVNC": vnc,
+            "enableLog": logs
+        }
+        }
 
-    elif browser == "firefox":
-        options = webdriver.FirefoxOptions()
-        if headless: options.headless = True
-        driver = webdriver.Firefox(options=options)
-
-    elif browser == "ie":
-        options = webdriver.IeOptions()
-        if headless: options.headless = True
-        driver = webdriver.Ie(options=options)
-
-    if maximized:
-        driver.maximize_window()
+    driver = webdriver.Remote(
+        command_executor=executor_url,
+        desired_capabilities=capabilities
+    )
 
     request.addfinalizer(driver.close)
     driver.get(url)
