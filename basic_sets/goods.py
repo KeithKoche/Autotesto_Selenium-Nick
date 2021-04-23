@@ -1,7 +1,11 @@
+import logging
+from os import path, remove
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
+if path.isfile("./logs/goods.log"):
+    remove("./logs/goods.log")
 
 class PageGoods:
     path = "/index.php?route=product/product&path=57&product_id=49"
@@ -9,8 +13,17 @@ class PageGoods:
 
     def __init__(self, driver):
         self.driver = driver
+        self.logger = logging.getLogger('Страница товара')
+        self.logger.setLevel(logging.INFO)
+
+        logger_handler = logging.FileHandler('./logs/goods.log')
+        logger_handler.setLevel(logging.INFO)
+        logger_formatter = logging.Formatter('%(asctime)s- %(name)s - %(levelname)s - %(message)s')
+        logger_handler.setFormatter(logger_formatter)
+        self.logger.addHandler(logger_handler)
 
     def goodspage_open(self, browse):
+        self.logger.info("Страница открыта")
         self.driver.get(browse.url + self.path)
 
     def goodspage_view(self):
